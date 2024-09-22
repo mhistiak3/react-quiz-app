@@ -29,20 +29,20 @@ function reducer(state, action) {
       return {
         ...state,
         answer: action.payload,
-        points: (state.points + point),
+        points: state.points + point,
       };
+    case "nextQuestion":
+      return { ...state, currentQIndex: state.currentQIndex + 1, answer:null };
 
     default:
-      throw new Error("Action is unkonwn");
+      throw Error("Action is unkonwn");
   }
 }
 export default function App() {
-  const [{ questions, status, currentQIndex, answer,points }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
-  console.log(points);
-  
+  const [{ questions, status, currentQIndex, answer, points }, dispatch] =
+    useReducer(reducer, initialState);
+console.log(points);
+
   let numQuestions = questions.length;
   useEffect(() => {
     async function fetchData() {
@@ -67,11 +67,23 @@ export default function App() {
           <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
         )}
         {status === "active" && (
-          <Questions
-            dispatch={dispatch}
-            question={questions[currentQIndex]}
-            answer={answer}
-          />
+          <>
+            <Questions
+              dispatch={dispatch}
+              question={questions[currentQIndex]}
+              answer={answer}
+            />
+            {answer !== null ? (
+              <button
+                className="btn btn-ui"
+                onClick={() => dispatch({ type: "nextQuestion" })}
+              >
+                Next Question
+              </button>
+            ) : (
+              ""
+            )}
+          </>
         )}
       </Main>
     </div>
