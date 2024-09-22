@@ -9,6 +9,7 @@ import Questions from "./components/Questions";
 const initialState = {
   questions: [],
   status: "loading",
+  currentQIndex:0
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -24,7 +25,10 @@ function reducer(state, action) {
   }
 }
 export default function App() {
-  const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, currentQIndex }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
   let numQuestions = questions.length
   useEffect(() => {
     async function fetchData() {
@@ -49,7 +53,9 @@ export default function App() {
         {status === "ready" && (
           <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
         )}
-        {status === "active" && <Questions />}
+        {status === "active" && (
+          <Questions question={questions[currentQIndex]} />
+        )}
       </Main>
     </div>
   );
