@@ -5,6 +5,7 @@ import Loader from "./components/Loader";
 import Error from "./components/Error";
 import StartScreen from "./components/StartScreen";
 import Questions from "./components/Questions";
+import Progress from "./components/Progress";
 
 const initialState = {
   questions: [],
@@ -32,7 +33,7 @@ function reducer(state, action) {
         points: state.points + point,
       };
     case "nextQuestion":
-      return { ...state, currentQIndex: state.currentQIndex + 1, answer:null };
+      return { ...state, currentQIndex: state.currentQIndex + 1, answer: null };
 
     default:
       throw Error("Action is unkonwn");
@@ -41,9 +42,10 @@ function reducer(state, action) {
 export default function App() {
   const [{ questions, status, currentQIndex, answer, points }, dispatch] =
     useReducer(reducer, initialState);
-console.log(points);
 
   let numQuestions = questions.length;
+  let maxPoints = questions.reduce((acc, question) => question.points + acc,0);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -68,6 +70,13 @@ console.log(points);
         )}
         {status === "active" && (
           <>
+            <Progress
+              currentQIndex={currentQIndex}
+              points={points}
+              numQuestions={numQuestions}
+              maxPoints={maxPoints}
+              answer={answer}
+            />
             <Questions
               dispatch={dispatch}
               question={questions[currentQIndex]}
