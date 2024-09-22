@@ -9,7 +9,9 @@ import Questions from "./components/Questions";
 const initialState = {
   questions: [],
   status: "loading",
-  currentQIndex:0
+  currentQIndex: 0,
+  answer: null,
+  points: 0,
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -19,17 +21,29 @@ function reducer(state, action) {
       return { ...state, status: "error" };
     case "start":
       return { ...state, status: "active" };
+    case "newAnswer":
+      const point =
+        state.questions[state.currentQIndex].correctOption === action.payload
+          ? state.questions[state.currentQIndex].points
+          : 0;
+      return {
+        ...state,
+        answer: action.payload,
+        points: (state.points + point),
+      };
 
     default:
       throw new Error("Action is unkonwn");
   }
 }
 export default function App() {
-  const [{ questions, status, currentQIndex }, dispatch] = useReducer(
+  const [{ questions, status, currentQIndex, answer,points }, dispatch] = useReducer(
     reducer,
     initialState
   );
-  let numQuestions = questions.length
+  console.log(points);
+  
+  let numQuestions = questions.length;
   useEffect(() => {
     async function fetchData() {
       try {
@@ -42,7 +56,6 @@ export default function App() {
     }
     fetchData();
   }, []);
-
   return (
     <div className="app">
       <Header />
@@ -54,7 +67,11 @@ export default function App() {
           <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
         )}
         {status === "active" && (
-          <Questions question={questions[currentQIndex]} />
+          <Questions
+            dispatch={dispatch}
+            question={questions[currentQIndex]}
+            answer={answer}
+          />
         )}
       </Main>
     </div>

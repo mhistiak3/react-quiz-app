@@ -7,8 +7,8 @@
   --color-light: #f1f3f5;
 
   /* Updated purple color scheme */
-  --color-theme: #6f42c1; /* Purple */
-  --color-accent: #9f7aea; /* Lighter purple for accents */
+  --color-theme: #5e1ed4; /* Purple */
+  --color-accent: #8560d1; /* Lighter purple for accents */
 }
 
 
@@ -123,7 +123,7 @@ progress {
 .btn {
   display: block;
   font-family: inherit;
-  color: inherit;
+  color: white;
   font-size: 2rem;
   border: 2px solid var(--color-dark);
   background-color: var(--color-dark);
@@ -150,6 +150,7 @@ progress {
 }
 
 .options {
+    color: white;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -169,7 +170,6 @@ progress {
 .btn-option.wrong {
   background-color: var(--color-accent);
   border: 2px solid var(--color-accent);
-  color: var(--color-darkest);
 }
 
 .answer {
