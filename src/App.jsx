@@ -43,6 +43,14 @@ function reducer(state, action) {
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
       };
+    case "reset":
+      return {
+        ...state,
+        status: "active",
+        currentQIndex: 0,
+        answer: null,
+        points: 0,
+      };
 
     default:
       throw Error("Action is unkonwn");
@@ -115,7 +123,12 @@ export default function App() {
           </>
         )}
         {status === "finished" && (
-          <FinishScore points={points} maxPoints={maxPoints} highscore={highscore} />
+          <FinishScore
+            points={points}
+            maxPoints={maxPoints}
+            highscore={highscore}
+            dispatch={dispatch}
+          />
         )}
       </Main>
     </div>
