@@ -46,7 +46,7 @@ function reducer(state, action) {
     case "reset":
       return {
         ...state,
-        status: "active",
+        status: "ready",
         currentQIndex: 0,
         answer: null,
         points: 0,
