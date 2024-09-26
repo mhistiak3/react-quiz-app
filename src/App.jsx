@@ -6,6 +6,7 @@ import Error from "./components/Error";
 import StartScreen from "./components/StartScreen";
 import Questions from "./components/Questions";
 import Progress from "./components/Progress";
+import FinishScore from "./components/FinishScore";
 
 const initialState = {
   questions: [],
@@ -13,6 +14,7 @@ const initialState = {
   currentQIndex: 0,
   answer: null,
   points: 0,
+  highscore: 0,
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -34,17 +36,26 @@ function reducer(state, action) {
       };
     case "nextQuestion":
       return { ...state, currentQIndex: state.currentQIndex + 1, answer: null };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highscore:
+          state.points > state.highscore ? state.points : state.highscore,
+      };
 
     default:
       throw Error("Action is unkonwn");
   }
 }
 export default function App() {
-  const [{ questions, status, currentQIndex, answer, points }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    { questions, status, currentQIndex, answer, points, highscore },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   let numQuestions = questions.length;
-  let maxPoints = questions.reduce((acc, question) => question.points + acc,0);
+  let maxPoints = questions.reduce((acc, question) => question.points + acc, 0);
 
   useEffect(() => {
     async function fetchData() {
@@ -83,16 +94,28 @@ export default function App() {
               answer={answer}
             />
             {answer !== null ? (
-              <button
-                className="btn btn-ui"
-                onClick={() => dispatch({ type: "nextQuestion" })}
-              >
-                Next Question
-              </button>
+              currentQIndex === numQuestions - 1 ? (
+                <button
+                  className="btn btn-ui"
+                  onClick={() => dispatch({ type: "finish" })}
+                >
+                  Finish Quiz
+                </button>
+              ) : (
+                <button
+                  className="btn btn-ui"
+                  onClick={() => dispatch({ type: "nextQuestion" })}
+                >
+                  Next Question
+                </button>
+              )
             ) : (
               ""
             )}
           </>
+        )}
+        {status === "finished" && (
+          <FinishScore points={points} maxPoints={maxPoints} highscore={highscore} />
         )}
       </Main>
     </div>
