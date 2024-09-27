@@ -7,6 +7,7 @@ import StartScreen from "./components/StartScreen";
 import Questions from "./components/Questions";
 import Progress from "./components/Progress";
 import FinishScore from "./components/FinishScore";
+import Timer from "./components/Timer";
 
 const initialState = {
   questions: [],
@@ -15,6 +16,7 @@ const initialState = {
   answer: null,
   points: 0,
   highscore: 0,
+  secendsRemaining: null,
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -23,7 +25,11 @@ function reducer(state, action) {
     case "dataFailed":
       return { ...state, status: "error" };
     case "start":
-      return { ...state, status: "active" };
+      return {
+        ...state,
+        status: "active",
+        secendsRemaining: state.questions.length * 30,
+      };
     case "newAnswer":
       const point =
         state.questions[state.currentQIndex].correctOption === action.payload
@@ -50,6 +56,13 @@ function reducer(state, action) {
         currentQIndex: 0,
         answer: null,
         points: 0,
+        secendsRemaining: null,
+      };
+    case "tick":
+      return {
+        ...state,
+        secendsRemaining: state.secendsRemaining - 1,
+        status: state.secendsRemaining === 0 ? "finished" : state.status,
       };
 
     default:
@@ -58,7 +71,15 @@ function reducer(state, action) {
 }
 export default function App() {
   const [
-    { questions, status, currentQIndex, answer, points, highscore },
+    {
+      questions,
+      status,
+      currentQIndex,
+      answer,
+      points,
+      highscore,
+      secendsRemaining,
+    },
     dispatch,
   ] = useReducer(reducer, initialState);
 
@@ -101,25 +122,28 @@ export default function App() {
               question={questions[currentQIndex]}
               answer={answer}
             />
-            {answer !== null ? (
-              currentQIndex === numQuestions - 1 ? (
-                <button
-                  className="btn btn-ui"
-                  onClick={() => dispatch({ type: "finish" })}
-                >
-                  Finish Quiz
-                </button>
+            <footer>
+              <Timer dispatch={dispatch} secendsRemaining={secendsRemaining} />
+              {answer !== null ? (
+                currentQIndex === numQuestions - 1 ? (
+                  <button
+                    className="btn btn-ui"
+                    onClick={() => dispatch({ type: "finish" })}
+                  >
+                    Finish Quiz
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-ui"
+                    onClick={() => dispatch({ type: "nextQuestion" })}
+                  >
+                    Next Question
+                  </button>
+                )
               ) : (
-                <button
-                  className="btn btn-ui"
-                  onClick={() => dispatch({ type: "nextQuestion" })}
-                >
-                  Next Question
-                </button>
-              )
-            ) : (
-              ""
-            )}
+                ""
+              )}
+            </footer>
           </>
         )}
         {status === "finished" && (
